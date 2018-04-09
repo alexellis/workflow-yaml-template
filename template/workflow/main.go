@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,5 +12,5 @@ func main() {
 		log.Fatalf("Unable to read standard input: %s", err.Error())
 	}
 
-	fmt.Println(handle(input))
+	os.Stdout.Write(handle(input))
 }

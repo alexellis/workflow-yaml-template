@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -29,32 +31,39 @@ type WorkflowInner struct {
 // `yaml:"workflow"`
 
 // handle a serverless request
-func handle(req []byte) string {
+func handle(req []byte) []byte {
 	dir, _ := os.Getwd()
 
 	workflowBytes, readErr := ioutil.ReadFile(path.Join(dir, "./function/workflow.yml"))
 	if readErr != nil {
-		return readErr.Error()
+		return []byte(readErr.Error())
 	}
 
 	workflow := WorkflowTop{}
 
 	err := yaml.Unmarshal(workflowBytes, &workflow)
 	if err != nil {
-		return err.Error()
+		return []byte(err.Error())
 	}
 
 	previousInput := req
-	for _, step := range workflow.Workflow.Steps {
-		result, _, resErr := runStep(step, workflow.Workflow.GatewayURL, &previousInput)
-		// fmt.Println(result, resCode, resErr)
+	for i, step := range workflow.Workflow.Steps {
+		st := time.Now()
+		result, statusCode, resErr := runStep(step, workflow.Workflow.GatewayURL, &previousInput)
+		log.Printf("[%d] %s %d byte(s) HTTP: %d - %fs\n",
+			i,
+			step.Name,
+			len(result),
+			statusCode,
+			time.Since(st).Seconds())
+
 		if resErr != nil {
-			return resErr.Error()
+			return []byte(resErr.Error())
 		}
 		previousInput = result
 	}
 
-	return string(previousInput)
+	return previousInput
 }
 
 func runStep(step WorkflowStep, gatewayURL string, input *[]byte) ([]byte, int, error) {

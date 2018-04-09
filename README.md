@@ -62,5 +62,5 @@ functions:
 faas build && faas deploy
 
 
-echo -n "https://www.youtube.com/watch?v=0Bmhjf0rKe8" | faas invoke workflow-runner "https://www.youtube.com/watch?v=0Bmhjf0rKe8" > cat-surprise.gif
+echo -n "https://www.youtube.com/watch?v=0Bmhjf0rKe8" | faas invoke youtube-gif "https://www.youtube.com/watch?v=0Bmhjf0rKe8" > cat-surprise.gif
 ```
