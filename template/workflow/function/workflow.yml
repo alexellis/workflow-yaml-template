@@ -1,0 +1,11 @@
+workflow:
+  name: youtube2gif
+  gateway_url: http://gateway:8080/
+  steps:
+    - name: download-video
+      function: youtube-dl
+      method: POST
+
+    - name: convert-to-gif
+      function: gif-maker
+      method: POST
