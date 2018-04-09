@@ -5,7 +5,7 @@ Rudimentary YAML workflow runner for OpenFaaS
 
 * Generate a workflow:
 
-```
+```bash
 faas template pull https://github.com/alexellis/workflow-yaml-template
 faas new --lang workflow youtube2gif
 ```
@@ -54,4 +54,13 @@ functions:
     environment:
       write_timeout: 65
       read_timeout: 65
+```
+
+* Build / deploy / test:
+
+```
+faas build && faas deploy
+
+
+echo -n "https://www.youtube.com/watch?v=0Bmhjf0rKe8" | faas invoke workflow-runner "https://www.youtube.com/watch?v=0Bmhjf0rKe8" > cat-surprise.gif
 ```
