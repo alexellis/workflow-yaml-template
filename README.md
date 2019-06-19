@@ -39,21 +39,24 @@ functions:
     lang: workflow
     handler: ./youtube-gif
     image: youtube-gif
+    environment:
+      write_timeout: 2m
+      read_timeout: 2m
 
   ## Dependent functions
   gif-maker:
     skip_build: true
     image: functions/gif-maker:latest
     environment:
-      write_timeout: 65
-      read_timeout: 65
+      write_timeout: 65s
+      read_timeout: 65s
 
   youtube-dl:
     skip_build: true
-    image: alexellis2/faas-youtubedl:latest
+    image: rgee0/faas-youtubedl:0.4
     environment:
-      write_timeout: 65
-      read_timeout: 65
+      write_timeout: 65s
+      read_timeout: 65s
 ```
 
 * Build / deploy / test:
