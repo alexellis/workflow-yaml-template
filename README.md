@@ -7,10 +7,10 @@ Rudimentary YAML workflow runner for OpenFaaS
 
 ```bash
 faas template pull https://github.com/alexellis/workflow-yaml-template
-faas new --lang workflow youtube2gif
+faas new --lang workflow youtube2gif --prefix=DOCKER_HUB_NAME
 ```
 
-* Customise:
+* Customise `youtube2gif/workflow.yml`
 
 ```yaml
 workflow:
@@ -26,22 +26,22 @@ workflow:
       method: POST
 ```
 
-* Custom `stack.yml`
+* Add the dependent functions to your `stack.yml`
 
 ```yaml
 provider:
-  name: faas
-  gateway: http://localhost:8080
+  name: openfaas
 
 functions:
   ## Workflow runner
-  youtube-gif:
+  youtube2gif:
     lang: workflow
-    handler: ./youtube-gif
-    image: youtube-gif
+    handler: ./youtube2gif
+    image: YOUR_HUB_USERNAME/youtube-gif
     environment:
       write_timeout: 2m
       read_timeout: 2m
+      combine_output: false
 
   ## Dependent functions
   gif-maker:
@@ -50,6 +50,7 @@ functions:
     environment:
       write_timeout: 65s
       read_timeout: 65s
+      combine_output: false
 
   youtube-dl:
     skip_build: true
@@ -57,13 +58,17 @@ functions:
     environment:
       write_timeout: 65s
       read_timeout: 65s
+      combine_output: false
 ```
 
 * Build / deploy / test:
 
 ```
-faas build && faas deploy
+faas-cli up -f youtube2gif.yml 
+```
 
+* Test it out:
 
-echo -n "https://www.youtube.com/watch?v=0Bmhjf0rKe8" | faas invoke youtube-gif "https://www.youtube.com/watch?v=0Bmhjf0rKe8" > cat-surprise.gif
+```
+echo -n "https://www.youtube.com/watch?v=0Bmhjf0rKe8" | faas invoke youtube2gif "https://www.youtube.com/watch?v=0Bmhjf0rKe8" > cat-surprise.gif
 ```
